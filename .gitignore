@@ -5,6 +5,7 @@ android/
 README.md
 pubspec.lock
 go.sum
+server/.cosmtrek_air
 
 # Miscellaneous
 *.class
