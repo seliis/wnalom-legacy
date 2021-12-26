@@ -1,7 +1,19 @@
+// Dependencies
 import "package:flutter/material.dart";
+import "package:get/get.dart";
 
+// Controllers
+import "package:wnalom/controller/signature_controller.dart";
+
+// Component
 class Signature extends StatelessWidget {
-    Signature({Key? key}) : super(key: key);
+    Signature({
+        Key? key,
+        required this.mainServer
+    }) : super(key: key);
+
+    final SignatureControl signatureControl = Get.find();
+    final String mainServer;
 
     final Map controls = {
         "member": TextEditingController(),
@@ -49,7 +61,10 @@ class Signature extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 36)
                 )
             ),
-            onPressed: () {},
+            onPressed: () async {
+                final String respBody = await signatureControl.saveSignature(mainServer);
+                print(respBody);
+            },
         );
     }
 

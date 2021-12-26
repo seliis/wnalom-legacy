@@ -1,8 +1,11 @@
+// Dependencies
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 
-import "../../controller/dashboard_controller.dart";
+// Controllers
+import "package:wnalom/controller/dashboard_controller.dart";
 
+// Component
 class Dashboard extends StatelessWidget {
     const Dashboard({Key? key}) : super(key: key);
     
@@ -55,7 +58,7 @@ class Dashboard extends StatelessWidget {
         );
     }
 
-    ElevatedButton getStartAndStopButton(bool tradeActivationState, Function setActivationTrade) {
+    ElevatedButton getStartAndStopButton(bool tradeActivationState, Function setTradeActivation) {
         return ElevatedButton(
             child: Text(
                 tradeActivationState? "STOP" : "START",
@@ -72,7 +75,7 @@ class Dashboard extends StatelessWidget {
                     )
                 )
             ),
-            onPressed: () => setActivationTrade()
+            onPressed: () => setTradeActivation()
         );
     }
 

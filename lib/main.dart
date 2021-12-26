@@ -1,10 +1,21 @@
+// Dependencies
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 
-import "component/dashboard/dashboard.dart";
-import 'component/signature/signature.dart';
+// Components
+import "package:wnalom/component/dashboard/dashboard.dart";
+import "package:wnalom/component/signature/signature.dart";
+
+// Controllers
+import "package:wnalom/controller/signature_controller.dart";
 
 void main() {
+    // Global Variables
+    const String mainServer = "http://61.110.177.153:8080";
+
+    // Initialize Controllers
+    Get.put(SignatureControl());
+
     runApp(
         GetMaterialApp(
             initialRoute: "/dashboard",
@@ -15,7 +26,9 @@ void main() {
                 ),
                 GetPage(
                     name: "/signature",
-                    page: () => Signature(),
+                    page: () => Signature(
+                        mainServer: mainServer
+                    ),
                     transition: Transition.cupertino
                 )
             ],
