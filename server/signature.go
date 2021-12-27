@@ -1,42 +1,22 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 )
 
-type SignatureForm struct {
-	Member string `json:"member"`
-	APIKey string `json:"apikey"`
-	Secret string `json:"secret"`
-}
-
-func GetSignature() *fiber.App {
+func GetSignatureMicro() *fiber.App {
 	// Declare Signature Micro
-	Signature := fiber.New()
+	Micro := fiber.New()
 
 	// Method: POST
-	Signature.Post("/save", saveSignature)
+	Micro.Post("/save", saveSignature)
 
-	// Return Micro
-	return Signature
+	// Return
+	return Micro
 }
 
 func saveSignature(ctx *fiber.Ctx) error {
-	signatureForm := new(SignatureForm)
-
-	// Parsing
-	if err := ctx.BodyParser(signatureForm); err != nil {
-		ctx.SendString("Internal Server Error")
-		fmt.Println(err)
-		return ctx.SendStatus(500)
-	}
-
-	// Processing
-	fmt.Println(signatureForm.Member, signatureForm.APIKey, signatureForm.Secret)
-
-	if isMember(signatureForm.Member) {
+	if isMember(string(ctx.Body()[:])) {
 		ctx.SendString("Saved")
 		return ctx.SendStatus(200)
 	} else {
@@ -49,12 +29,10 @@ func isMember(memberId string) bool {
 	members := []string{
 		"alice", "bob", "eve",
 	}
-
 	for _, member := range members {
 		if member == memberId {
 			return true
 		}
 	}
-
 	return false
 }

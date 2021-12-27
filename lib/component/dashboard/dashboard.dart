@@ -50,7 +50,7 @@ class Dashboard extends StatelessWidget {
                     textAlign: TextAlign.end,
                     style: TextStyle(
                         fontWeight: FontWeight.w300,
-                        fontSize: 24
+                        fontSize: 16
                     ),
                 ),
                 const Divider(thickness: 2)

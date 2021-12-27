@@ -24,9 +24,11 @@ class SignatureControl extends GetxController {
             hiveBox = await Hive.openBox("db");
         }
         var hiveData = hiveBox.get("signature", defaultValue: {
-            "member": "not_saved_yet",
-            "apikey": "not_saved_yet",
-            "secret": "not_saved_yet",
+            // these keys related with signature datamap.
+            // please refer signature.dart
+            "member": "Insert Your Membership ID",
+            "apikey": "Insert Your Binance API Key",
+            "secret": "Insert Your Binance Secret Key",
         });
         memberSaved = hiveData["member"];
         apikeySaved = hiveData["apikey"];
@@ -37,7 +39,7 @@ class SignatureControl extends GetxController {
     Future<http.Response> saveSignature(String mainServer, Map dataMap) async {
         final resp = await http.post(
             Uri.parse(mainServer + "/signature/save"),
-            body: dataMap
+            body: dataMap["member"]
         );
         if (resp.statusCode == 200) {
             var hiveBox = await Hive.openBox("db");

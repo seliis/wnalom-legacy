@@ -11,7 +11,8 @@ func main() {
 	})
 
 	// Mounting Distributors
-	mainServer.Mount("/signature", GetSignature())
+	mainServer.Mount("/dashboard", GetDashboardMicro())
+	mainServer.Mount("/signature", GetSignatureMicro())
 
 	// Initiate Listening
 	mainServer.Listen(":8080")

@@ -89,6 +89,7 @@ class Signature extends StatelessWidget {
             ),
             onPressed: () async {
                 final Map dataMap = {
+                    // these keys corresponding with hive
                     "member": textEditingControllers["member"].text,
                     "apikey": textEditingControllers["apikey"].text,
                     "secret": textEditingControllers["secret"].text,
