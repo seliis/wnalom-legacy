@@ -15,7 +15,7 @@ class Signature extends StatelessWidget {
     final SignatureControl signatureControl = Get.find();
     final String mainServer;
 
-    final Map controls = {
+    final Map textEditingControllers = {
         "member": TextEditingController(),
         "apikey": TextEditingController(),
         "secret": TextEditingController()
@@ -52,10 +52,18 @@ class Signature extends StatelessWidget {
         );
     }
 
-    TextFormField getTextFormField(String controlsKey, String labelText) {
+    TextFormField getTextFormField(String hintText, String controlsKey, String labelText) {
+        
+        // [2021-12-27]: using "hintText" instead "initialValue" due to occur error.
+
         return TextFormField(
-            controller: controls[controlsKey],
+            controller: textEditingControllers[controlsKey],
             decoration: InputDecoration(
+                hintText: hintText,
+                hintStyle: TextStyle(
+                    fontSize: 12,
+                    color: Colors.teal.shade100
+                ),
                 labelText: labelText,
                 labelStyle: const TextStyle(
                     fontSize: 12
@@ -80,12 +88,19 @@ class Signature extends StatelessWidget {
             ),
             onPressed: () async {
                 final Map dataMap = {
-                    "member": controls["member"].text,
-                    "apikey": controls["apikey"].text,
-                    "secret": controls["secret"].text,
+                    "member": textEditingControllers["member"].text,
+                    "apikey": textEditingControllers["apikey"].text,
+                    "secret": textEditingControllers["secret"].text,
                 };
-                final String respResult = await signatureControl.saveSignature(mainServer, dataMap);
+                final String respResult = await signatureControl.saveSignature(
+                    mainServer, dataMap
+                );
                 FocusScope.of(context).unfocus();
+                if (respResult == "Saved") {
+                    textEditingControllers.forEach((key, value) {
+                        value.text = "";
+                    });
+                }
                 getDialog(respResult);
             },
         );
@@ -97,16 +112,19 @@ class Signature extends StatelessWidget {
             appBar: getAppBar(),
             body: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                        getTextFormField("member", "Membership ID"),
-                        getTextFormField("apikey", "API Key"),
-                        getTextFormField("secret", "Secret Key"),
-                        const SizedBox(height: 8),
-                        getSaveButton(context)
-                    ],
-                ),
+                child: GetBuilder<SignatureControl>(
+                    init: SignatureControl(),
+                    builder: (control) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                            getTextFormField(control.member, "member", "Membership ID"),
+                            getTextFormField(control.apikey, "apikey", "API Key"),
+                            getTextFormField(control.secret, "secret", "Secret Key"),
+                            const SizedBox(height: 8),
+                            getSaveButton(context)
+                        ],
+                    ),
+                )
             ),
         ));
     }

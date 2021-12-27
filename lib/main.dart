@@ -1,4 +1,5 @@
 // Dependencies
+import "package:hive_flutter/hive_flutter.dart";
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 
@@ -9,15 +10,17 @@ import "package:wnalom/component/signature/signature.dart";
 // Controllers
 import "package:wnalom/controller/signature_controller.dart";
 
-void main() {
+void main() async {
     // Global Variables
-    // const String mainServer = "http://61.110.177.153:8080";
-    // const String mainServer = "http://192.168.0.6:8080";
-    const String mainServer = "http://192.168.193.137:8080";
+    const String mainServer = "http://61.110.177.153:8080";
+
+    // Initialize Hive Database
+    await Hive.initFlutter();
 
     // Initialize Controllers
     Get.put(SignatureControl());
 
+    // Running Application
     runApp(
         GetMaterialApp(
             initialRoute: "/dashboard",

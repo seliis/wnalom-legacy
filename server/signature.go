@@ -28,6 +28,7 @@ func saveSignature(ctx *fiber.Ctx) error {
 
 	// Parsing
 	if err := ctx.BodyParser(signatureForm); err != nil {
+		ctx.SendString("Internal Server Error")
 		fmt.Println(err)
 		return ctx.SendStatus(500)
 	}
@@ -35,7 +36,25 @@ func saveSignature(ctx *fiber.Ctx) error {
 	// Processing
 	fmt.Println(signatureForm.Member, signatureForm.APIKey, signatureForm.Secret)
 
-	// Responsing
-	ctx.SendString("Received")
-	return ctx.SendStatus(200)
+	if isMember(signatureForm.Member) {
+		ctx.SendString("Saved")
+		return ctx.SendStatus(200)
+	} else {
+		ctx.SendString("Denied")
+		return ctx.SendStatus(401)
+	}
+}
+
+func isMember(memberId string) bool {
+	members := []string{
+		"alice", "bob", "eve",
+	}
+
+	for _, member := range members {
+		if member == memberId {
+			return true
+		}
+	}
+
+	return false
 }
