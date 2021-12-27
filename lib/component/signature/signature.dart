@@ -1,4 +1,5 @@
 // Dependencies
+import "package:http/http.dart" as http;
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 
@@ -92,16 +93,16 @@ class Signature extends StatelessWidget {
                     "apikey": textEditingControllers["apikey"].text,
                     "secret": textEditingControllers["secret"].text,
                 };
-                final String respResult = await signatureControl.saveSignature(
+                final http.Response resp = await signatureControl.saveSignature(
                     mainServer, dataMap
                 );
                 FocusScope.of(context).unfocus();
-                if (respResult == "Saved") {
+                if (resp.statusCode == 200) {
                     textEditingControllers.forEach((key, value) {
                         value.text = "";
                     });
                 }
-                getDialog(respResult);
+                getDialog(resp.body);
             },
         );
     }
@@ -117,9 +118,9 @@ class Signature extends StatelessWidget {
                     builder: (control) => Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                            getTextFormField(control.member, "member", "Membership ID"),
-                            getTextFormField(control.apikey, "apikey", "API Key"),
-                            getTextFormField(control.secret, "secret", "Secret Key"),
+                            getTextFormField(control.memberSaved, "member", "Membership ID"),
+                            getTextFormField(control.apikeySaved, "apikey", "API Key"),
+                            getTextFormField(control.secretSaved, "secret", "Secret Key"),
                             const SizedBox(height: 8),
                             getSaveButton(context)
                         ],

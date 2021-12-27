@@ -8,6 +8,7 @@ import "package:wnalom/component/dashboard/dashboard.dart";
 import "package:wnalom/component/signature/signature.dart";
 
 // Controllers
+import "package:wnalom/controller/dashboard_controller.dart";
 import "package:wnalom/controller/signature_controller.dart";
 
 void main() async {
@@ -18,6 +19,7 @@ void main() async {
     await Hive.initFlutter();
 
     // Initialize Controllers
+    Get.put(DashboardControl());
     Get.put(SignatureControl());
 
     // Running Application
@@ -32,7 +34,7 @@ void main() async {
                 GetPage(
                     name: "/signature",
                     page: () => Signature(
-                        mainServer: mainServer
+                        mainServer: "http://172.30.1.58:8080"
                     ),
                     transition: Transition.cupertino
                 )

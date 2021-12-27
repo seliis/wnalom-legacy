@@ -7,9 +7,9 @@ import "package:get/get.dart";
 class SignatureControl extends GetxController {
     static SignatureControl get to => Get.find();
 
-    String member = "?";
-    String apikey = "?";
-    String secret = "?";
+    String memberSaved = "";
+    String apikeySaved = "";
+    String secretSaved = "";
 
     @override
     void onInit() {
@@ -18,34 +18,32 @@ class SignatureControl extends GetxController {
     }
 
     Future getStoredData() async {
-        Box box; try {
-            box = Hive.box("db");
+        Box hiveBox; try {
+            hiveBox = Hive.box("db");
         } catch (err) {
-            box = await Hive.openBox("db");
+            hiveBox = await Hive.openBox("db");
         }
-        var stored = box.get("signature", defaultValue: {
-            "member": "empty",
-            "apikey": "empty",
-            "secret": "empty",
+        var hiveData = hiveBox.get("signature", defaultValue: {
+            "member": "not_saved_yet",
+            "apikey": "not_saved_yet",
+            "secret": "not_saved_yet",
         });
-        member = stored["member"];
-        apikey = stored["apikey"];
-        secret = stored["secret"];
+        memberSaved = hiveData["member"];
+        apikeySaved = hiveData["apikey"];
+        secretSaved = hiveData["secret"];
         update();
     }
 
-    Future saveSignature(String mainServer, Map dataMap) async {
+    Future<http.Response> saveSignature(String mainServer, Map dataMap) async {
         final resp = await http.post(
             Uri.parse(mainServer + "/signature/save"),
             body: dataMap
         );
-
         if (resp.statusCode == 200) {
-            var box = await Hive.openBox("db");
-            box.put("signature", dataMap);
+            var hiveBox = await Hive.openBox("db");
+            hiveBox.put("signature", dataMap);
             getStoredData();
         }
-
-        return resp.body;
+        return resp;
     }
 }
