@@ -21,6 +21,23 @@ class Signature extends StatelessWidget {
         "secret": TextEditingController()
     };
 
+    void getDialog(String middleText) {
+        Get.defaultDialog(
+            title: "WNALOM",
+            middleText: middleText,
+            titleStyle: const TextStyle(
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.75,
+                color: Colors.teal,
+                fontSize: 10,
+            ),
+            middleTextStyle: const TextStyle(
+                fontWeight: FontWeight.w300,
+                fontSize: 12
+            )
+        );
+    }
+
     AppBar getAppBar() {
         return AppBar(
             title: const Text(
@@ -48,7 +65,7 @@ class Signature extends StatelessWidget {
         );
     }
 
-    ElevatedButton getSaveButton() {
+    ElevatedButton getSaveButton(BuildContext context) {
         return ElevatedButton(
             child: const Text(
                 "Save",
@@ -62,8 +79,14 @@ class Signature extends StatelessWidget {
                 )
             ),
             onPressed: () async {
-                final String respBody = await signatureControl.saveSignature(mainServer);
-                print(respBody);
+                final Map dataMap = {
+                    "member": controls["member"].text,
+                    "apikey": controls["apikey"].text,
+                    "secret": controls["secret"].text,
+                };
+                final String respResult = await signatureControl.saveSignature(mainServer, dataMap);
+                FocusScope.of(context).unfocus();
+                getDialog(respResult);
             },
         );
     }
@@ -81,7 +104,7 @@ class Signature extends StatelessWidget {
                         getTextFormField("apikey", "API Key"),
                         getTextFormField("secret", "Secret Key"),
                         const SizedBox(height: 8),
-                        getSaveButton()
+                        getSaveButton(context)
                     ],
                 ),
             ),

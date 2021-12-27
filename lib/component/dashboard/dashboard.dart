@@ -65,7 +65,7 @@ class Dashboard extends StatelessWidget {
                 style: const TextStyle(
                     fontWeight: FontWeight.w300,
                     letterSpacing: 1.25,
-                    fontSize: 16,
+                    fontSize: 12,
                 ),
             ),
             style: ButtonStyle(
