@@ -13,9 +13,7 @@ func main() {
 	// Mounting Distributors
 	mainServer.Mount("/dashboard", getDashboardMicro())
 	mainServer.Mount("/signature", getSignatureMicro())
-
-	// Open Socket
-	openSocket()
+	mainServer.Mount("/websocket", getWebSocketMicro())
 
 	// Initiate Listening
 	mainServer.Listen(":8080")

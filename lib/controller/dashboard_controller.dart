@@ -20,24 +20,17 @@ class DashboardControl extends GetxController {
         endPoint = data["endPoint"];
     }
     
-    void coupleChannel() {
+    void coupleChannel() async {
         channel = IOWebSocketChannel.connect(
-            Uri.parse("ws://$endPoint/websocket"),
-            headers: { // what's wrong?
-                "connection": "upgrade",
-                "Upgrade": "websocket"
-            }
+            Uri.parse("ws://$endPoint/websocket/stream")
         );
-        print("opened");
-        channel?.stream.listen((event) {
-            print(event);
+        channel?.stream.listen((data) {
+            print(data);
         });
-        print("listen");
     }
 
-    void detachChannel() {
+    void decoupleChannel() {
         channel?.sink.close(status.goingAway);
-        print("closed");
     }
 
     Future<http.Response> toggleTrade(String mainServer) async {
@@ -50,7 +43,7 @@ class DashboardControl extends GetxController {
                 body: hiveBox.get("signature")
             );
             if (resp.statusCode == 200) {
-                tradeState? detachChannel() : coupleChannel();
+                tradeState? decoupleChannel() : coupleChannel();
                 tradeState = !tradeState;
                 update();
             }

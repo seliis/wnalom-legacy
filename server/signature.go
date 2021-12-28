@@ -5,13 +5,10 @@ import (
 )
 
 func getSignatureMicro() *fiber.App {
-	// Declare Signature Micro
 	micro := fiber.New()
 
-	// Method: POST
 	micro.Post("/save", saveSignature)
 
-	// Return
 	return micro
 }
 

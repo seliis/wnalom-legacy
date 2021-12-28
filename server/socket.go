@@ -18,43 +18,40 @@ var decouple = make(chan *websocket.Conn)
 func runHub() {
 	for { // Infinite Loop
 		select {
-		case node := <-register:
-			audience[node] = Auditorium{}
+		case connection := <-register:
+			audience[connection] = Auditorium{}
 			log.Println("registered")
-		case node := <-decouple:
-			delete(audience, node)
+		case connection := <-decouple:
+			delete(audience, connection)
 			log.Println("de-coupled")
-		default:
-			for node := range audience {
-				if err := node.WriteMessage(websocket.TextMessage, []byte("hello, world!")); err != nil {
-					node.WriteMessage(websocket.CloseMessage, []byte{})
-					delete(audience, node)
-					log.Println(err)
-					node.Close()
-				}
-			}
 		}
 	}
 }
 
-func openSocket() {
+func getWebSocketMicro() *fiber.App {
 	micro := fiber.New()
 	go runHub()
 
-	micro.Use("/websocket", func(ctx *fiber.Ctx) error {
+	micro.Use("/stream", func(ctx *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(ctx) {
 			ctx.Locals("allowed", true)
 			return ctx.Next()
 		}
-		return fiber.ErrUpgradeRequired
+		return ctx.SendStatus(426)
 	})
 
-	micro.Get("/websocket", websocket.New(func(connection *websocket.Conn) {
+	micro.Get("/stream", websocket.New(func(connection *websocket.Conn) {
 		defer func() {
 			decouple <- connection
 			connection.Close()
 		}()
 
 		register <- connection
+
+		for i := 0; i < 10; i++ {
+			connection.WriteMessage(websocket.TextMessage, []byte("hello, world!"))
+		}
 	}))
+
+	return micro
 }
