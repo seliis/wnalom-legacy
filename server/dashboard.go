@@ -23,6 +23,14 @@ func GetDashboardMicro() *fiber.App {
 func startTrade(ctx *fiber.Ctx) error {
 	signatureForm := new(SignatureForm)
 	ctx.BodyParser(signatureForm)
+
 	fmt.Println(signatureForm.Member, signatureForm.APIKey, signatureForm.Secret)
-	return ctx.SendStatus(200)
+
+	if isMember(signatureForm.Member) {
+		ctx.SendString("Authorized")
+		return ctx.SendStatus(200)
+	}
+
+	ctx.SendString("Denied")
+	return ctx.SendStatus(401)
 }

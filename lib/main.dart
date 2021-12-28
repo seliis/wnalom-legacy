@@ -19,7 +19,7 @@ void main() async {
     };
 
     // Switcher
-    String endPoint = endPoints["phone"];
+    String endPoint = endPoints["home"];
 
     // Initialize Hive Database
     await Hive.initFlutter();

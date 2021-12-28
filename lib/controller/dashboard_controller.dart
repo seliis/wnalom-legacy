@@ -9,11 +9,11 @@ class DashboardControl extends GetxController {
 
     bool tradeActivationState = false;
 
-    Future<String> toggleTradeActivation(String mainServer) async {
+    Future<http.Response> toggleTradeActivation(String mainServer) async {
         Box hiveBox = Hive.box("db");
         final hiveData = hiveBox.get("signature");
 
-        if (hiveData == null || hiveData["member"] != "" && hiveData["apikey"] != "" && hiveData["secret"] != "") {
+        if (hiveData != null && hiveData["member"] != "" && hiveData["apikey"] != "" && hiveData["secret"] != "") {
             final resp = await http.post(
                 Uri.parse(mainServer + "/dashboard/start"),
                 body: hiveBox.get("signature")
@@ -21,10 +21,10 @@ class DashboardControl extends GetxController {
             if (resp.statusCode == 200) {
                 tradeActivationState = !tradeActivationState;
                 update();
-                return tradeActivationState? "Started" : "Stopped";
             }
+            return resp;
         }
 
-        return "No Signature";
+        return http.Response("Check Your Signature", 428);
     }
 }

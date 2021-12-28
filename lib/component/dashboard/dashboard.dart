@@ -1,4 +1,5 @@
 // Dependencies
+import "package:http/http.dart" as http;
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 
@@ -98,8 +99,8 @@ class Dashboard extends StatelessWidget {
                 )
             ),
             onPressed: () async {
-                final String message = await DashboardControl.to.toggleTradeActivation(mainServer);
-                getDialog(message);
+                final http.Response resp = await DashboardControl.to.toggleTradeActivation(mainServer);
+                getDialog(resp.body);
             }
         );
     }

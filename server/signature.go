@@ -19,10 +19,9 @@ func saveSignature(ctx *fiber.Ctx) error {
 	if isMember(string(ctx.Body()[:])) {
 		ctx.SendString("Saved")
 		return ctx.SendStatus(200)
-	} else {
-		ctx.SendString("Denied")
-		return ctx.SendStatus(401)
 	}
+	ctx.SendString("Denied")
+	return ctx.SendStatus(401)
 }
 
 func isMember(memberId string) bool {
