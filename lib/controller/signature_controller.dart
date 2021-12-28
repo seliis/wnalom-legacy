@@ -17,13 +17,14 @@ class SignatureControl extends GetxController {
         super.onInit();
     }
 
-    Future getStoredData() async {
+    void getStoredData() async {
         Box hiveBox; try {
             hiveBox = Hive.box("db");
         } catch (err) {
+            // initial recognize database from here.
             hiveBox = await Hive.openBox("db");
         }
-        var hiveData = hiveBox.get("signature", defaultValue: {
+        final hiveData = hiveBox.get("signature", defaultValue: {
             // these keys related with signature datamap.
             // please refer signature.dart
             "member": "Insert Your Membership ID",
@@ -42,7 +43,7 @@ class SignatureControl extends GetxController {
             body: dataMap["member"]
         );
         if (resp.statusCode == 200) {
-            var hiveBox = await Hive.openBox("db");
+            final Box hiveBox = Hive.box("db");
             hiveBox.put("signature", dataMap);
             getStoredData();
         }

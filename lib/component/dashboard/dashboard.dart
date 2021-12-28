@@ -7,8 +7,30 @@ import "package:wnalom/controller/dashboard_controller.dart";
 
 // Component
 class Dashboard extends StatelessWidget {
-    const Dashboard({Key? key}) : super(key: key);
+    const Dashboard({
+        Key? key,
+        required this.mainServer
+    }) : super(key: key);
     
+    final String mainServer;
+
+    void getDialog(String middleText) {
+        Get.defaultDialog(
+            title: "WNALOM",
+            middleText: middleText,
+            titleStyle: const TextStyle(
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.75,
+                color: Colors.teal,
+                fontSize: 10,
+            ),
+            middleTextStyle: const TextStyle(
+                fontWeight: FontWeight.w300,
+                fontSize: 12
+            )
+        );
+    }
+
     AppBar getAppBar() {
         return AppBar(
             title: const Text(
@@ -58,10 +80,10 @@ class Dashboard extends StatelessWidget {
         );
     }
 
-    ElevatedButton getStartAndStopButton(bool tradeActivationState, Function setTradeActivation) {
+    ElevatedButton getStartAndStopButton() {
         return ElevatedButton(
             child: Text(
-                tradeActivationState? "STOP" : "START",
+                DashboardControl.to.tradeActivationState? "STOP" : "START",
                 style: const TextStyle(
                     fontWeight: FontWeight.w300,
                     letterSpacing: 1.25,
@@ -75,7 +97,10 @@ class Dashboard extends StatelessWidget {
                     )
                 )
             ),
-            onPressed: () => setTradeActivation()
+            onPressed: () async {
+                final String message = await DashboardControl.to.toggleTradeActivation(mainServer);
+                getDialog(message);
+            }
         );
     }
 
@@ -92,10 +117,7 @@ class Dashboard extends StatelessWidget {
                         children: [
                             getDataBox("STREAMED TICKER PRICE"),
                             getDataBox("YOUR ACCOUNT BALANCE"),
-                            getStartAndStopButton(
-                                control.tradeActivationState,
-                                control.setTradeActivation
-                            )
+                            getStartAndStopButton()
                         ],
                     ),
                 )

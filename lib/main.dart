@@ -12,8 +12,14 @@ import "package:wnalom/controller/dashboard_controller.dart";
 import "package:wnalom/controller/signature_controller.dart";
 
 void main() async {
-    // Global Variables
-    const String mainServer = "http://61.110.177.153:8080";
+    // End Points
+    const Map endPoints = {
+        "phone": "http://192.168.193.137:8080",
+        "home": "http://61.110.177.153:8080"
+    };
+
+    // Switcher
+    String endPoint = endPoints["phone"];
 
     // Initialize Hive Database
     await Hive.initFlutter();
@@ -29,12 +35,14 @@ void main() async {
             getPages: [
                 GetPage(
                     name: "/dashboard",
-                    page: () => const Dashboard()
+                    page: () => Dashboard(
+                        mainServer: endPoint
+                    )
                 ),
                 GetPage(
                     name: "/signature",
                     page: () => Signature(
-                        mainServer: mainServer
+                        mainServer: endPoint
                     ),
                     transition: Transition.cupertino
                 )
