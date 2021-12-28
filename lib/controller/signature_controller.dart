@@ -11,10 +11,8 @@ class SignatureControl extends GetxController {
     String apikeySaved = "";
     String secretSaved = "";
 
-    @override
-    void onInit() {
+    void setInitiate(data) {
         getStoredData();
-        super.onInit();
     }
 
     void getStoredData() async {
@@ -39,7 +37,7 @@ class SignatureControl extends GetxController {
 
     Future<http.Response> saveSignature(String mainServer, Map dataMap) async {
         final resp = await http.post(
-            Uri.parse(mainServer + "/signature/save"),
+            Uri.parse("http://$mainServer/signature/save"),
             body: dataMap["member"]
         );
         if (resp.statusCode == 200) {

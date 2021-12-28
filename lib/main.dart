@@ -14,8 +14,8 @@ import "package:wnalom/controller/signature_controller.dart";
 void main() async {
     // End Points
     const Map endPoints = {
-        "phone": "http://192.168.193.137:8080",
-        "home": "http://61.110.177.153:8080"
+        "phone": "192.168.193.137:8080",
+        "home": "61.110.177.153:8080"
     };
 
     // Switcher
@@ -25,8 +25,16 @@ void main() async {
     await Hive.initFlutter();
 
     // Initialize Controllers
-    Get.put(DashboardControl());
-    Get.put(SignatureControl());
+    final DashboardControl dashboardControl = Get.put(DashboardControl());
+    final SignatureControl signatureControl = Get.put(SignatureControl());
+
+    dashboardControl.setInitiate({
+        "endPoint": endPoint
+    });
+
+    signatureControl.setInitiate({
+
+    });
 
     // Running Application
     runApp(

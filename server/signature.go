@@ -4,15 +4,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetSignatureMicro() *fiber.App {
+func getSignatureMicro() *fiber.App {
 	// Declare Signature Micro
-	Micro := fiber.New()
+	micro := fiber.New()
 
 	// Method: POST
-	Micro.Post("/save", saveSignature)
+	micro.Post("/save", saveSignature)
 
 	// Return
-	return Micro
+	return micro
 }
 
 func saveSignature(ctx *fiber.Ctx) error {

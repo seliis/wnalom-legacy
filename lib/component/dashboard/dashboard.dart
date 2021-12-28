@@ -84,7 +84,7 @@ class Dashboard extends StatelessWidget {
     ElevatedButton getStartAndStopButton() {
         return ElevatedButton(
             child: Text(
-                DashboardControl.to.tradeActivationState? "STOP" : "START",
+                DashboardControl.to.tradeState? "STOP" : "START",
                 style: const TextStyle(
                     fontWeight: FontWeight.w300,
                     letterSpacing: 1.25,
@@ -99,7 +99,7 @@ class Dashboard extends StatelessWidget {
                 )
             ),
             onPressed: () async {
-                final http.Response resp = await DashboardControl.to.toggleTradeActivation(mainServer);
+                final http.Response resp = await DashboardControl.to.toggleTrade(mainServer);
                 getDialog(resp.body);
             }
         );
@@ -113,7 +113,7 @@ class Dashboard extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: GetBuilder<DashboardControl>(
                     init: DashboardControl(),
-                    builder: (control) => Column(
+                    builder: (_) => Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                             getDataBox("STREAMED TICKER PRICE"),

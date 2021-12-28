@@ -116,12 +116,12 @@ class Signature extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: GetBuilder<SignatureControl>(
                     init: SignatureControl(),
-                    builder: (control) => Column(
+                    builder: (_) => Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                            getTextFormField(control.memberSaved, "member", "Membership ID"),
-                            getTextFormField(control.apikeySaved, "apikey", "API Key"),
-                            getTextFormField(control.secretSaved, "secret", "Secret Key"),
+                            getTextFormField(signatureControl.memberSaved, "member", "Membership ID"),
+                            getTextFormField(signatureControl.apikeySaved, "apikey", "API Key"),
+                            getTextFormField(signatureControl.secretSaved, "secret", "Secret Key"),
                             const SizedBox(height: 8),
                             getSaveButton(context)
                         ],

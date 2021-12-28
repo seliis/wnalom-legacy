@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -12,19 +10,17 @@ type SignatureForm struct {
 	Secret string `json:"secret"`
 }
 
-func GetDashboardMicro() *fiber.App {
-	Micro := fiber.New()
+func getDashboardMicro() *fiber.App {
+	micro := fiber.New()
 
-	Micro.Post("/start", startTrade)
+	micro.Post("/start", startTrade)
 
-	return Micro
+	return micro
 }
 
 func startTrade(ctx *fiber.Ctx) error {
 	signatureForm := new(SignatureForm)
 	ctx.BodyParser(signatureForm)
-
-	fmt.Println(signatureForm.Member, signatureForm.APIKey, signatureForm.Secret)
 
 	if isMember(signatureForm.Member) {
 		ctx.SendString("Authorized")
