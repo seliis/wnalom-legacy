@@ -8,13 +8,10 @@ import "package:wnalom/controller/signature_controller.dart";
 
 // Component
 class Signature extends StatelessWidget {
-    Signature({
-        Key? key,
-        required this.mainServer
-    }) : super(key: key);
+    Signature({Key? key}) : super(key: key);
 
+    // Find Controller
     final SignatureControl signatureControl = Get.find();
-    final String mainServer;
 
     final Map textEditingControllers = {
         "member": TextEditingController(),
@@ -94,9 +91,7 @@ class Signature extends StatelessWidget {
                     "apikey": textEditingControllers["apikey"].text,
                     "secret": textEditingControllers["secret"].text,
                 };
-                final http.Response resp = await signatureControl.saveSignature(
-                    mainServer, dataMap
-                );
+                final http.Response resp = await signatureControl.saveSignature(dataMap);
                 FocusScope.of(context).unfocus();
                 if (resp.statusCode == 200) {
                     textEditingControllers.forEach((key, value) {
@@ -119,9 +114,9 @@ class Signature extends StatelessWidget {
                     builder: (_) => Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                            getTextFormField(signatureControl.memberSaved, "member", "Membership ID"),
-                            getTextFormField(signatureControl.apikeySaved, "apikey", "API Key"),
-                            getTextFormField(signatureControl.secretSaved, "secret", "Secret Key"),
+                            getTextFormField(signatureControl.memberSaved!, "member", "Membership ID"),
+                            getTextFormField(signatureControl.apikeySaved!, "apikey", "Your API Key"),
+                            getTextFormField(signatureControl.secretSaved!, "secret", "Secret Key"),
                             const SizedBox(height: 8),
                             getSaveButton(context)
                         ],

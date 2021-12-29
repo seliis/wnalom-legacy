@@ -8,12 +8,10 @@ import "package:wnalom/controller/dashboard_controller.dart";
 
 // Component
 class Dashboard extends StatelessWidget {
-    const Dashboard({
-        Key? key,
-        required this.mainServer
-    }) : super(key: key);
-    
-    final String mainServer;
+    Dashboard({Key? key}) : super(key: key);
+
+    // Find Controller
+    final DashboardControl dashboardControl = Get.find();
 
     void getDialog(String middleText) {
         Get.defaultDialog(
@@ -84,7 +82,7 @@ class Dashboard extends StatelessWidget {
     ElevatedButton getStartAndStopButton() {
         return ElevatedButton(
             child: Text(
-                DashboardControl.to.tradeState? "STOP" : "START",
+                dashboardControl.tradeState? "STOP" : "START",
                 style: const TextStyle(
                     fontWeight: FontWeight.w300,
                     letterSpacing: 1.25,
@@ -99,7 +97,7 @@ class Dashboard extends StatelessWidget {
                 )
             ),
             onPressed: () async {
-                final http.Response resp = await DashboardControl.to.toggleTrade(mainServer);
+                final http.Response resp = await dashboardControl.toggleTrade();
                 getDialog(resp.body);
             }
         );

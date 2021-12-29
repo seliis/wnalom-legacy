@@ -7,11 +7,13 @@ import "package:get/get.dart";
 class SignatureControl extends GetxController {
     static SignatureControl get to => Get.find();
 
-    String memberSaved = "";
-    String apikeySaved = "";
-    String secretSaved = "";
+    String? memberSaved;
+    String? apikeySaved;
+    String? secretSaved;
+    String? endPoint;
 
     void setInitiate(data) {
+        endPoint = data["endPoint"];
         getStoredData();
     }
 
@@ -35,9 +37,9 @@ class SignatureControl extends GetxController {
         update();
     }
 
-    Future<http.Response> saveSignature(String mainServer, Map dataMap) async {
+    Future<http.Response> saveSignature(Map dataMap) async {
         final resp = await http.post(
-            Uri.parse("http://$mainServer/signature/save"),
+            Uri.parse("http://$endPoint/signature/save"),
             body: dataMap["member"]
         );
         if (resp.statusCode == 200) {

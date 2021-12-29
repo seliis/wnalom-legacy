@@ -2,55 +2,36 @@ package main
 
 import (
 	"log"
+	"math/rand"
+	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
+
+	"github.com/go-co-op/gocron"
 )
-
-type Auditorium struct{}
-
-var audience = make(map[*websocket.Conn]Auditorium)
-var register = make(chan *websocket.Conn)
-var decouple = make(chan *websocket.Conn)
-
-// var delivery = make(chan string)
-
-func runHub() {
-	for { // Infinite Loop
-		select {
-		case connection := <-register:
-			audience[connection] = Auditorium{}
-			log.Println("registered")
-		case connection := <-decouple:
-			delete(audience, connection)
-			log.Println("de-coupled")
-		}
-	}
-}
 
 func getWebSocketMicro() *fiber.App {
 	micro := fiber.New()
-	go runHub()
 
-	micro.Use("/stream", func(ctx *fiber.Ctx) error {
-		if websocket.IsWebSocketUpgrade(ctx) {
-			ctx.Locals("allowed", true)
-			return ctx.Next()
-		}
-		return ctx.SendStatus(426)
+	var number int // for socket testing
+	scheduler := gocron.NewScheduler(time.UTC)
+	scheduler.Every(1).Second().Do(func() {
+		number = rand.Intn(100)
 	})
+	scheduler.StartAsync()
 
 	micro.Get("/stream", websocket.New(func(connection *websocket.Conn) {
-		defer func() {
-			decouple <- connection
-			connection.Close()
-		}()
-
-		register <- connection
-
-		for i := 0; i < 10; i++ {
-			connection.WriteMessage(websocket.TextMessage, []byte("hello, world!"))
+		for {
+			err := connection.WriteMessage(1, []byte(strconv.Itoa(number)))
+			time.Sleep(1 * time.Second)
+			if err != nil {
+				break
+			}
 		}
+		defer connection.Close()
+		log.Println("closed")
 	}))
 
 	return micro

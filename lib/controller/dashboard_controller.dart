@@ -4,6 +4,7 @@ import "package:hive_flutter/hive_flutter.dart";
 import "package:web_socket_channel/io.dart";
 import "package:http/http.dart" as http;
 import "package:get/get.dart";
+import "dart:async";
 
 // Controller
 class DashboardControl extends GetxController {
@@ -22,7 +23,8 @@ class DashboardControl extends GetxController {
     
     void coupleChannel() async {
         channel = IOWebSocketChannel.connect(
-            Uri.parse("ws://$endPoint/websocket/stream")
+            Uri.parse("ws://$endPoint/websocket/stream"),
+            pingInterval: const Duration(seconds: 10)
         );
         channel?.stream.listen((data) {
             print(data);
@@ -30,16 +32,17 @@ class DashboardControl extends GetxController {
     }
 
     void decoupleChannel() {
+        channel?.sink.add("[wnalomApp]: decouple");
         channel?.sink.close(status.goingAway);
     }
 
-    Future<http.Response> toggleTrade(String mainServer) async {
+    Future<http.Response> toggleTrade() async {
         Box hiveBox = Hive.box("db");
         final hiveData = hiveBox.get("signature");
 
         if (hiveData != null && hiveData["member"] != "" && hiveData["apikey"] != "" && hiveData["secret"] != "") {
             final resp = await http.post(
-                Uri.parse("http://$mainServer/dashboard/start"),
+                Uri.parse("http://$endPoint/dashboard/start"),
                 body: hiveBox.get("signature")
             );
             if (resp.statusCode == 200) {

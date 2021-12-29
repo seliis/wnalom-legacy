@@ -19,7 +19,7 @@ void main() async {
     };
 
     // Switcher
-    String endPoint = endPoints["home"];
+    String endPoint = endPoints["phone"];
 
     // Initialize Hive Database
     await Hive.initFlutter();
@@ -33,7 +33,7 @@ void main() async {
     });
 
     signatureControl.setInitiate({
-
+        "endPoint": endPoint
     });
 
     // Running Application
@@ -43,15 +43,11 @@ void main() async {
             getPages: [
                 GetPage(
                     name: "/dashboard",
-                    page: () => Dashboard(
-                        mainServer: endPoint
-                    )
+                    page: () => Dashboard()
                 ),
                 GetPage(
                     name: "/signature",
-                    page: () => Signature(
-                        mainServer: endPoint
-                    ),
+                    page: () => Signature(),
                     transition: Transition.cupertino
                 )
             ],
