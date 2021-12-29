@@ -27,9 +27,12 @@ class DashboardControl extends GetxController {
         endPoint = data["endPoint"];
     }
     
-    void coupleChannel() {
+    void coupleChannel(dynamic hiveData) {
         channel = IOWebSocketChannel.connect(
-            Uri.parse("ws://$endPoint/websocket/stream")
+            Uri.parse("ws://$endPoint/websocket/stream"),
+            headers: {
+                "memberId": hiveData["member"]
+            }
         );
         channel?.stream.listen((data) {
             uiData["price"] = data;
@@ -37,7 +40,8 @@ class DashboardControl extends GetxController {
         });
     }
 
-    void detachChannel() {
+    void detachChannel(dynamic hiveData) {
+        channel?.sink.add("[WNALOM-APP] DETACHING REQUESTED | MEMBER ID: " + hiveData["member"]);
         channel?.sink.close(status.goingAway);
     }
 
@@ -70,7 +74,7 @@ class DashboardControl extends GetxController {
                 
                 // is normal connect?
                 if (response.statusCode == 200) {
-                    tradeState? detachChannel() : coupleChannel();
+                    tradeState? detachChannel(hiveData) : coupleChannel(hiveData);
                     tradeState = !tradeState;
                     update();
                 }

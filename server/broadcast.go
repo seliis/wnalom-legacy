@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"strconv"
@@ -18,6 +19,8 @@ var (
 	receiver = make(map[*websocket.Conn]BroadcastHub)
 	register = make(chan *websocket.Conn)
 	detacher = make(chan *websocket.Conn)
+	messages = make(chan string)
+	ipLogger = make(chan string)
 )
 
 func getWebSocketMicro() *fiber.App {
@@ -25,6 +28,12 @@ func getWebSocketMicro() *fiber.App {
 
 	go openHub()
 	streamData()
+
+	micro.Use("/stream", func(ctx *fiber.Ctx) error {
+		member := ctx.Get("memberId")
+		ctx.Locals("memberId", member)
+		return ctx.Next()
+	})
 
 	micro.Get("/stream", websocket.New(pushToHub))
 
@@ -36,10 +45,12 @@ func openHub() {
 		select {
 		case connection := <-register:
 			receiver[connection] = BroadcastHub{}
-			log.Println("registed")
 		case connection := <-detacher:
 			delete(receiver, connection)
-			log.Println("detached")
+		case textString := <-messages:
+			log.Println(textString)
+		case textString := <-ipLogger:
+			log.Println(textString)
 		}
 	}
 }
@@ -57,17 +68,28 @@ func streamData() {
 	scheduler.StartAsync()
 }
 
-func pushToHub(node *websocket.Conn) {
-	register <- node
+func pushToHub(connection *websocket.Conn) {
+	// get connection informations
+	member := fmt.Sprintf("%v", connection.Locals("memberId"))
+	ip := connection.LocalAddr().String()
 
-	for { // for maintain connection
-		if _, _, err := node.ReadMessage(); err != nil {
+	// regist process
+	register <- connection
+	ipLogger <- "REGISTED MEMBER ID: " + member + ", IP ADDRESS: " + ip
+
+	// maintain connection
+	for {
+		_, message, err := connection.ReadMessage()
+		if err != nil {
 			break
 		}
+		messages <- string(message)
 	}
 
+	// detach process
 	defer func() {
-		detacher <- node
-		node.Close()
+		detacher <- connection
+		ipLogger <- "DETACHED MEMBER ID: " + member + ", IP ADDRESS: " + ip
+		connection.Close()
 	}()
 }

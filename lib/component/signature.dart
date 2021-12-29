@@ -91,15 +91,15 @@ class Signature extends StatelessWidget {
                     "apikey": textEditingControllers["apikey"].text,
                     "secret": textEditingControllers["secret"].text,
                 };
-                final http.Response resp = await signatureControl.saveSignature(dataMap);
                 FocusScope.of(context).unfocus();
-                if (resp.statusCode == 200) {
+                final http.Response response = await signatureControl.saveSignature(dataMap);
+                if (response.statusCode == 200) {
                     textEditingControllers.forEach((key, value) {
                         value.text = "";
                     });
                     Get.offAllNamed("/dashboard");
                 }
-                getDialog(resp.body);
+                getDialog(response.body);
             },
         );
     }

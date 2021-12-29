@@ -4,8 +4,8 @@ import "package:flutter/material.dart";
 import "package:get/get.dart";
 
 // Components
-import "package:wnalom/component/dashboard/dashboard.dart";
-import "package:wnalom/component/signature/signature.dart";
+import 'package:wnalom/component/dashboard.dart';
+import 'package:wnalom/component/signature.dart';
 
 // Controllers
 import "package:wnalom/controller/dashboard_controller.dart";
