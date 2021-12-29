@@ -16,41 +16,77 @@ class DashboardControl extends GetxController {
     bool tradeState = false;
     String? endPoint;
 
+    // Dashboard UI Present Data
+    Map<String, String> uiData = {
+        "price": "Disconnected",
+        "balance": "Disconnected"
+    };
+
     // Set Initial State
     void setInitiate(data) {
         endPoint = data["endPoint"];
     }
     
-    void coupleChannel() async {
+    void coupleChannel() {
         channel = IOWebSocketChannel.connect(
-            Uri.parse("ws://$endPoint/websocket/stream"),
-            pingInterval: const Duration(seconds: 10)
+            Uri.parse("ws://$endPoint/websocket/stream")
         );
         channel?.stream.listen((data) {
-            print(data);
+            uiData["price"] = data;
+            update();
         });
     }
 
-    void decoupleChannel() {
-        channel?.sink.add("[wnalomApp]: decouple");
+    void detachChannel() {
         channel?.sink.close(status.goingAway);
+    }
+
+    bool isHaveData(dynamic hiveData) {
+        if (hiveData == null) {
+            return false;
+        } else if (hiveData["member"] == "") {
+            return false;
+        } else if (hiveData["apikey"] == "") {
+            return false;
+        } else if (hiveData["secret"] == "") {
+            return false;
+        }
+        return true;
     }
 
     Future<http.Response> toggleTrade() async {
         Box hiveBox = Hive.box("db");
         final hiveData = hiveBox.get("signature");
 
-        if (hiveData != null && hiveData["member"] != "" && hiveData["apikey"] != "" && hiveData["secret"] != "") {
-            final resp = await http.post(
-                Uri.parse("http://$endPoint/dashboard/start"),
-                body: hiveBox.get("signature")
-            );
-            if (resp.statusCode == 200) {
-                tradeState? decoupleChannel() : coupleChannel();
-                tradeState = !tradeState;
-                update();
+        if (isHaveData(hiveData) == true) {
+            try {
+                // attempt connect to main server
+                final response = await http.post(
+                    Uri.parse("http://$endPoint/dashboard/start"),
+                    body: hiveData
+                ).timeout(
+                    const Duration(seconds: 5)
+                );
+                
+                // is normal connect?
+                if (response.statusCode == 200) {
+                    tradeState? detachChannel() : coupleChannel();
+                    tradeState = !tradeState;
+                    update();
+                }
+
+                // Reset Dashboard
+                if (!tradeState) {
+                    uiData.forEach((key, _) {
+                        uiData[key] = "Disconnected";
+                    });
+                    update();
+                }
+
+                return response;
+            } on TimeoutException catch(_) {
+                return http.Response("Server No Response", 444);
             }
-            return resp;
         }
 
         return http.Response("Check Your Signature", 428);

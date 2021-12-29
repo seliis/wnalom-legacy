@@ -3,6 +3,7 @@ module wnalom
 go 1.17
 
 require (
+	github.com/go-co-op/gocron v1.11.0
 	github.com/gofiber/fiber/v2 v2.23.0
 	github.com/gofiber/websocket/v2 v2.0.14
 )
@@ -10,7 +11,6 @@ require (
 require (
 	github.com/andybalholm/brotli v1.0.2 // indirect
 	github.com/fasthttp/websocket v1.4.3-rc.10 // indirect
-	github.com/go-co-op/gocron v1.11.0 // indirect
 	github.com/klauspost/compress v1.13.4 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/savsgio/gotils v0.0.0-20210921075833-21a6215cb0e4 // indirect

@@ -97,6 +97,7 @@ class Signature extends StatelessWidget {
                     textEditingControllers.forEach((key, value) {
                         value.text = "";
                     });
+                    Get.offAllNamed("/dashboard");
                 }
                 getDialog(resp.body);
             },

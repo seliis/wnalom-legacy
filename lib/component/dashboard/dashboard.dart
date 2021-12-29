@@ -54,7 +54,24 @@ class Dashboard extends StatelessWidget {
         );
     }
 
-    Column getDataBox(String title) {
+    Column getDataBox(String title, String? textData) {
+        
+        double getTextFontSize() {
+            if (dashboardControl.tradeState && textData != "Disconnected") {
+                return 16;
+            } else {
+                return 12;
+            }
+        }
+        
+        Color getTextColor() {
+            if (dashboardControl.tradeState && textData != "Disconnected") {
+                return Colors.black;
+            } else {
+                return Colors.pink;
+            }
+        }
+
         return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -66,12 +83,16 @@ class Dashboard extends StatelessWidget {
                     )
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                    "0",
-                    textAlign: TextAlign.end,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 16
+                SizedBox(
+                    height: 50,
+                    child: Text(
+                        textData!,
+                        textAlign: TextAlign.end,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            fontSize: getTextFontSize(),
+                            color: getTextColor()
+                        ),
                     ),
                 ),
                 const Divider(thickness: 2)
@@ -97,8 +118,10 @@ class Dashboard extends StatelessWidget {
                 )
             ),
             onPressed: () async {
-                final http.Response resp = await dashboardControl.toggleTrade();
-                getDialog(resp.body);
+                final http.Response response = await dashboardControl.toggleTrade();
+                if (response.statusCode != 200) {
+                    getDialog(response.body);
+                }
             }
         );
     }
@@ -114,8 +137,8 @@ class Dashboard extends StatelessWidget {
                     builder: (_) => Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                            getDataBox("STREAMED TICKER PRICE"),
-                            getDataBox("YOUR ACCOUNT BALANCE"),
+                            getDataBox("STREAMED TICKER PRICE", dashboardControl.uiData["price"]),
+                            getDataBox("YOUR ACCOUNT BALANCE", dashboardControl.uiData["balance"]),
                             getStartAndStopButton()
                         ],
                     ),
