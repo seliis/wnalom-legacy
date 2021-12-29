@@ -3,14 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
-	"math/rand"
-	"strconv"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 
-	"github.com/go-co-op/gocron"
+	"github.com/adshao/go-binance/v2"
 )
 
 type BroadcastHub struct{}
@@ -23,11 +20,33 @@ var (
 	ipLogger = make(chan string)
 )
 
+func getAggregateData() {
+	wsHandler := func(event *binance.WsAggTradeEvent) {
+		for connection := range receiver {
+			connection.WriteJSON(event)
+		}
+		fmt.Println(event)
+	}
+
+	errHandler := func(err error) {
+		log.Println(err)
+	}
+
+	doneChannel, _, err := binance.WsAggTradeServe("BTCUSDT", wsHandler, errHandler)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	<-doneChannel
+}
+
 func getWebSocketMicro() *fiber.App {
 	micro := fiber.New()
 
+	go getAggregateData()
+
 	go openHub()
-	streamData()
 
 	micro.Use("/stream", func(ctx *fiber.Ctx) error {
 		member := ctx.Get("memberId")
@@ -53,19 +72,6 @@ func openHub() {
 			log.Println(textString)
 		}
 	}
-}
-
-func streamData() {
-	scheduler := gocron.NewScheduler(time.UTC)
-
-	scheduler.Every(500).Millisecond().Do(func() {
-		num := rand.Intn(1000000)
-		for connection := range receiver {
-			connection.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(num)))
-		}
-	})
-
-	scheduler.StartAsync()
 }
 
 func pushToHub(connection *websocket.Conn) {

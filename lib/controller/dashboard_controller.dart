@@ -1,4 +1,6 @@
 // Dependencies
+import 'dart:convert';
+
 import "package:web_socket_channel/status.dart" as status;
 import "package:hive_flutter/hive_flutter.dart";
 import "package:web_socket_channel/io.dart";
@@ -35,7 +37,8 @@ class DashboardControl extends GetxController {
             }
         );
         channel?.stream.listen((data) {
-            uiData["price"] = data;
+            final streamData = jsonDecode(data);
+            uiData["price"] = streamData["p"];
             update();
         });
     }
