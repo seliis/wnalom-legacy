@@ -1,11 +1,10 @@
 // Dependencies
-import 'dart:convert';
-
 import "package:web_socket_channel/status.dart" as status;
 import "package:hive_flutter/hive_flutter.dart";
 import "package:web_socket_channel/io.dart";
 import "package:http/http.dart" as http;
 import "package:get/get.dart";
+import "dart:convert";
 import "dart:async";
 
 // Controller
@@ -38,7 +37,7 @@ class DashboardControl extends GetxController {
         );
         channel?.stream.listen((data) {
             final streamData = jsonDecode(data);
-            uiData["price"] = streamData["p"];
+            uiData["price"] = double.parse(streamData["p"]).toStringAsFixed(2);
             update();
         });
     }
@@ -84,10 +83,15 @@ class DashboardControl extends GetxController {
 
                 // Reset Dashboard
                 if (!tradeState) {
-                    uiData.forEach((key, _) {
-                        uiData[key] = "Disconnected";
+                    // delay for prevent conflict with last web socket response
+                    Future.delayed(const Duration(seconds: 3), () {
+                        uiData.forEach((key, value) {
+                            if (value != "Disconnected") {
+                                uiData[key] = "Disconnected";
+                            }
+                        });
+                        update();
                     });
-                    update();
                 }
 
                 return response;

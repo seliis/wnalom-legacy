@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -20,6 +21,28 @@ var (
 	ipLogger = make(chan string)
 )
 
+func getMarketStat() {
+	wsHandler := func(event binance.WsAllMarketsStatEvent) {
+		eventData, err := json.Marshal(event)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(string(eventData))
+	}
+
+	errHandler := func(err error) {
+		fmt.Println(err)
+	}
+
+	channel, _, err := binance.WsAllMarketsStatServe(wsHandler, errHandler)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	<-channel
+}
+
 func getAggregateData() {
 	wsHandler := func(event *binance.WsAggTradeEvent) {
 		for connection := range receiver {
@@ -32,19 +55,20 @@ func getAggregateData() {
 		log.Println(err)
 	}
 
-	doneChannel, _, err := binance.WsAggTradeServe("BTCUSDT", wsHandler, errHandler)
+	channel, _, err := binance.WsAggTradeServe("BTCUSDT", wsHandler, errHandler)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	<-doneChannel
+	<-channel
 }
 
 func getWebSocketMicro() *fiber.App {
 	micro := fiber.New()
 
-	go getAggregateData()
+	// go getAggregateData()
+	go getMarketStat()
 
 	go openHub()
 

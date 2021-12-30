@@ -55,15 +55,6 @@ class Dashboard extends StatelessWidget {
     }
 
     Column getDataBox(String title, String? textData) {
-        
-        double getTextFontSize() {
-            if (dashboardControl.tradeState && textData != "Disconnected") {
-                return 16;
-            } else {
-                return 12;
-            }
-        }
-        
         Color getTextColor() {
             if (dashboardControl.tradeState && textData != "Disconnected") {
                 return Colors.black;
@@ -90,7 +81,7 @@ class Dashboard extends StatelessWidget {
                         textAlign: TextAlign.end,
                         style: TextStyle(
                             fontWeight: FontWeight.w300,
-                            fontSize: getTextFontSize(),
+                            fontSize: 12,
                             color: getTextColor()
                         ),
                     ),
@@ -103,7 +94,7 @@ class Dashboard extends StatelessWidget {
     ElevatedButton getStartAndStopButton() {
         return ElevatedButton(
             child: Text(
-                dashboardControl.tradeState? "STOP" : "START",
+                dashboardControl.tradeState? "DISCONNECT" : "CONNECT",
                 style: const TextStyle(
                     fontWeight: FontWeight.w300,
                     letterSpacing: 1.25,
